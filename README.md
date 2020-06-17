@@ -223,7 +223,7 @@ SELECT FIRST_NAME, LAST_NAME, UPPER(SUBSTR(FIRST_NAME, 0, 1) || SUBSTR(LAST_NAME
 
 Sélection pour de tous les employés ayant 2 e de suite « ee » dans leur nom ou leur prénom.
 
-```
+```sql
 SELECT * FROM EMPLOYEES WHERE FIRST_NAME LIKE ('%ee%') OR LAST_NAME LIKE('%ee%');
 ```
 
@@ -231,7 +231,7 @@ SELECT * FROM EMPLOYEES WHERE FIRST_NAME LIKE ('%ee%') OR LAST_NAME LIKE('%ee%')
 
 Sélection du nom et prénom des employés avec pour les noms la première et dernière lettre en clair et les autres remplacées par « \* ».
 
-```
+```sql
 SELECT
   SUBSTR(LAST_NAME, 0, 1) || REPLACE(LAST_NAME, SUBSTR(LAST_NAME, 1, LENGTH(LAST_NAME)), '*') || SUBSTR(LAST_NAME, -1, 1) AS LAST_NAME,
   SUBSTR(FIRST_NAME , 0, 1) || REPLACE(FIRST_NAME, SUBSTR(FIRST_NAME, 1, LENGTH(FIRST_NAME)), '*') || SUBSTR(FIRST_NAME , -1, 1) AS FIRST_NAME
@@ -242,7 +242,7 @@ FROM EMPLOYEES;
 
 Sélection pour du nom et prénom des employés qui ont le même nombre de lettres dans leur nom que dans leur prénom.
 
-```
+```sql
 SELECT LAST_NAME, FIRST_NAME FROM EMPLOYEES WHERE LENGTH(LAST_NAME) = LENGTH(FIRST_NAME);
 ```
 
@@ -254,7 +254,7 @@ SELECT LAST_NAME, FIRST_NAME FROM EMPLOYEES WHERE LENGTH(LAST_NAME) = LENGTH(FIR
 
 Sélection pour du nom et prénom des employés qui ont moins 2 l (lettre L) dans leur nom et prénom
 
-```
+```sql
 SELECT * FROM EMPLOYEES WHERE (LENGTH(FIRST_NAME) - LENGTH(REPLACE(FIRST_NAME, 'l', ''))) + (LENGTH(LAST_NAME) - LENGTH(REPLACE(LAST_NAME, 'l', ''))) < 2;
 ```
 
@@ -262,7 +262,7 @@ SELECT * FROM EMPLOYEES WHERE (LENGTH(FIRST_NAME) - LENGTH(REPLACE(FIRST_NAME, '
 
 Sélection des locations dont le code postal n'a que des chiffres
 
-```
+```sql
 SELECT * FROM LOCATIONS WHERE REGEXP_LIKE(POSTAL_CODE, '^[0-9]+$');
 ```
 
