@@ -51,3 +51,11 @@ Sélection pour tous les employés : FIRST_NAME, LAST_NAME et COMMISSION (SALAIR
 ```
 SELECT FIRST_NAME, LAST_NAME, ROUND((SALARY * NVL(COMMISSION_PCT, 0)), -2) AS COMMISSION FROM EMPLOYEES;
 ```
+
+### 3)
+
+Sélection pour tous les employés : FIRST_NAME, LAST_NAME et date d’embauche(HIRE_DATE)
+
+```
+SELECT FIRST_NAME, LAST_NAME, HIRE_DATE FROM EMPLOYEES;
+```
