@@ -54,7 +54,7 @@ SELECT FIRST_NAME, LAST_NAME, ROUND((SALARY * NVL(COMMISSION_PCT, 0)), -2) AS CO
 
 ### 3)
 
-Sélection pour tous les employés : FIRST_NAME, LAST_NAME et date d’embauche(HIRE_DATE)
+Sélection pour tous les employés : FIRST_NAME, LAST_NAME et date d'embauche(HIRE_DATE)
 
 ```
 SELECT FIRST_NAME, LAST_NAME, HIRE_DATE FROM EMPLOYEES;
@@ -62,7 +62,7 @@ SELECT FIRST_NAME, LAST_NAME, HIRE_DATE FROM EMPLOYEES;
 
 ### 4)
 
-Sélection pour tous les employés : FIRST_NAME, LAST_NAME et année d’embauche(HIRE_DATE)
+Sélection pour tous les employés : FIRST_NAME, LAST_NAME et année d'embauche(HIRE_DATE)
 
 ```
 SELECT FIRST_NAME, LAST_NAME, EXTRACT(YEAR FROM HIRE_DATE) FROM EMPLOYEES;
@@ -89,7 +89,7 @@ SELECT FIRST_NAME, LAST_NAME, SALARY FROM EMPLOYEES WHERE SALARY > 5000 AND SALA
 
 ### 3)
 
-Sélection de : FIRST_NAME, LAST_NAME et année d’embauche (HIRE_DATE) pour les employés embauchés avant 2003.
+Sélection de : FIRST_NAME, LAST_NAME et année d'embauche (HIRE_DATE) pour les employés embauchés avant 2003.
 
 ```
 SELECT FIRST_NAME, LAST_NAME, EXTRACT(YEAR FROM HIRE_DATE) FROM EMPLOYEES WHERE EXTRACT(YEAR FROM HIRE_DATE) < 2003;
@@ -169,3 +169,52 @@ WHERE COUNTRY_ID = 'US';
 Sélection numéro de rue (s'il existe sinon '....', nom de la rue, ville de
 
 > WTF ???
+
+### 13)
+
+Sélection dans la table historique de jobs numéro de l'employé, le mois/année de début et de fin et l'ID du job.
+
+```
+SELECT EMPLOYEE_ID, TO_CHAR(START_DATE, 'MM/YYYY') AS START_DATE, TO_CHAR(END_DATE, 'MM/YYYY') AS END_DATE, JOB_ID FROM JOB_HISTORY;
+```
+
+### 14)
+
+Sélection, dans la table des employés, le prénom et le nom et la reconstruire l'email à partir de nom et du prénom de chaque employé
+
+```
+SELECT FIRST_NAME, LAST_NAME, UPPER(SUBSTR(FIRST_NAME, 0, 1) || LAST_NAME) as EMAIL FROM EMPLOYEES;
+```
+
+### 15)
+
+Sélection dans la table historique de jobs numéro de l'employé, le mois/année de début et de fin et l'ID du job.
+
+> Voir exercice 13
+
+### 16)
+
+Sélection des ID, nom, et prénom des employés dont le salaire annuel + commission > 82000
+
+```
+SELECT EMPLOYEE_ID, LAST_NAME, FIRST_NAME FROM EMPLOYEES WHERE (COMMISSION_PCT*SALARY+SALARY)*12 > 82000;
+```
+
+### 17)
+
+Sélection du ° de téléphone, nom, prénom des employés qui n'ont pas un ° de téléphone du type 123.123.1234,
+
+```
+SELECT PHONE_NUMBER, LAST_NAME, FIRST_NAME FROM EMPLOYEES WHERE PHONE_NUMBER NOT LIKE ('___.___.____');
+--version REGEX :
+SELECT PHONE_NUMBER, LAST_NAME, FIRST_NAME FROM EMPLOYEES WHERE NOT REGEXP_LIKE(PHONE_NUMBER, '[0-9]{3}.[0-9]{3}.[0-9]{4}');
+```
+
+### 18)
+
+Sélection pour chaque employé ayant une commission >= a 15%, le prénom et le nom et leur trigramme (1 lettre du prénom + 1 lettre du nom + dernière lettre de nom) le tout en majuscule
+
+```
+SELECT FIRST_NAME, LAST_NAME, UPPER(SUBSTR(FIRST_NAME, 0, 1) || SUBSTR(LAST_NAME, 0, 1) || SUBSTR(LAST_NAME, -1, 1)) FROM EMPLOYEES
+WHERE COMMISSION_PCT >= 0.15;
+```
