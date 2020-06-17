@@ -265,3 +265,34 @@ Sélection des locations dont le code postal n'a que des chiffres
 ```
 SELECT * FROM LOCATIONS WHERE REGEXP_LIKE(POSTAL_CODE, '^[0-9]+$');
 ```
+
+## 3.1 Produit cartésien
+
+### 1)
+
+Sélection de : toutes les colonnes du produit catésien de COUNTRIES et de
+REGIONS.
+
+```sql
+SELECT * FROM COUNTRIES, REGIONS;
+```
+
+## 3.2 Jointures simple (équijointures)
+
+### 1)
+
+Sélection de : nom du pays et du nom de sa régions pour tous les pays de COUNTRIES.
+
+```sql
+SELECT COUNTRY_NAME, REGION_NAME FROM COUNTRIES INNER JOIN REGIONS ON COUNTRIES.REGION_ID = REGIONS.REGION_ID;
+```
+
+### 2)
+
+Sélection de : nom de la ville, nom du pays et du nom de sa régions pour toutes les villes de LOCATIONS.
+
+```sql
+SELECT CITY, COUNTRY_NAME, REGION_NAME FROM LOCATIONS
+INNER JOIN COUNTRIES ON LOCATIONS.COUNTRY_ID = COUNTRIES.COUNTRY_ID
+INNER JOIN REGIONS ON COUNTRIES.REGION_ID = REGIONS.REGION_ID;
+```
