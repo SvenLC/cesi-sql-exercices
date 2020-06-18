@@ -354,3 +354,26 @@ FROM EMPLOYEES e
 INNER JOIN EMPLOYEES m ON e.MANAGER_ID = m.EMPLOYEE_ID
 WHERE e.SALARY < 2500;
 ```
+
+## 4.1
+
+### 1)
+
+Sélection du salaire moyen de l’ensemble des employés de EMPLOYEES
+
+```sql
+SELECT AVG(SALARY)
+FROM EMPLOYEES;
+```
+
+### 2)
+
+Sélection de : nom de département, salaire moyen des employés pour tous les
+départements de DEPARTMENTS
+
+```sql
+SELECT DEPARTMENT_NAME, NVL(ROUND(AVG(SALARY)),0)
+FROM EMPLOYEES
+JOIN DEPARTMENTS ON EMPLOYEES.DEPARTMENT_ID = DEPARTMENTS.DEPARTMENT_ID
+GROUP BY DEPARTMENT_NAME;
+```
