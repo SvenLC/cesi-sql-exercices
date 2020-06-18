@@ -377,3 +377,183 @@ FROM EMPLOYEES
 JOIN DEPARTMENTS ON EMPLOYEES.DEPARTMENT_ID = DEPARTMENTS.DEPARTMENT_ID
 GROUP BY DEPARTMENT_NAME;
 ```
+
+### 3)
+
+Sélection de : nom de département, nom de fonction, nombre d’employés pour la fonction pour les départements de DEPARTMENTS et les fonctions de JOBS ayant des employés
+
+```sql
+SELECT DEPARTMENT_NAME, JOB_TITLE, COUNT(EMPLOYEE_ID)
+FROM DEPARTMENTS
+INNER JOIN EMPLOYEES ON DEPARTMENTS.DEPARTMENT_ID = EMPLOYEES.DEPARTMENT_ID
+INNER JOIN JOBS ON EMPLOYEES.JOB_ID = JOBS.JOB_ID
+GROUP BY DEPARTMENT_NAME, JOB_TITLE
+ORDER BY DEPARTMENT_NAME;
+```
+
+### 4)
+
+Sélection de : nom de la ville, le salaire minimum, le salaire maximum, nombre d’employés pour toutes les villes de LOCATIONS ayant des employés
+
+```sql
+SELECT CITY, MIN(SALARY), MAX(SALARY), COUNT(EMPLOYEE_ID)
+FROM LOCATIONS
+INNER JOIN DEPARTMENTS ON LOCATIONS.LOCATION_ID = DEPARTMENTS.LOCATION_ID
+INNER JOIN EMPLOYEES ON DEPARTMENTS.DEPARTMENT_ID = EMPLOYEES.DEPARTMENT_ID
+GROUP BY CITY;
+```
+
+## 4.2 Filtrage des regroupements
+
+### 1)
+
+Sélection de : nom de la ville, le salaire minimum, le salaire maximum, le salaire moyen arrondi à l’unité pour toutes les villes de LOCATIONS ayant au moins 5 employés.
+
+```sql
+SELECT CITY, MIN(SALARY), MAX(SALARY), ROUND(AVG(SALARY)), COUNT(EMPLOYEE_ID)
+FROM LOCATIONS
+INNER JOIN DEPARTMENTS ON LOCATIONS.LOCATION_ID = DEPARTMENTS.LOCATION_ID
+INNER JOIN EMPLOYEES ON DEPARTMENTS.DEPARTMENT_ID = EMPLOYEES.DEPARTMENT_ID
+GROUP BY CITY
+HAVING COUNT(EMPLOYEE_ID) >= 5;
+```
+
+### 2)
+
+Sélection de : nom du manager, nom de la fonction des employés, commission
+moyenne arrondie à l’unité pour tous les manager des employés de EMPLOYEES
+ayant une commission et chaque fonction de JOBS de ces employés.
+
+```sql
+SELECT m.LAST_NAME as "Manager", j.JOB_TITLE as "Métier", ROUND(AVG(e.COMMISSION_PCT*e.SALARY)) as "Commission moyenne"
+FROM EMPLOYEES e
+INNER JOIN EMPLOYEES m ON e.MANAGER_ID = m.EMPLOYEE_ID
+INNER JOIN JOBS j ON e.JOB_ID = j.JOB_ID
+WHERE e.COMMISSION_PCT IS NOT NULL
+GROUP BY m.LAST_NAME, j.JOB_TITLE;
+```
+
+### 3)
+
+Sélection de : prénom, nom des employés de EMPLOYEES ayant changés de
+fonction (indiqués dans JOB_HISTORY)
+
+```sql
+SELECT DISTINCT e.FIRST_NAME, e.LAST_NAME
+FROM EMPLOYEES e
+INNER JOIN JOB_HISTORY j ON e.EMPLOYEE_ID = j.EMPLOYEE_ID;
+```
+
+### 4)
+
+Sélection de : ville, nom du manager, % de commission moyenne des employés de EMPLOYEES par villes et managers dont les subordonnées ont une commission.
+
+```sql
+SELECT city, m.last_name, TO_CHAR(AVG(e.COMMISSION_PCT * 100), ‘90’) || ‘ %’
+FROM EMPLOYEES e
+JOIN EMPLOYEES m ON e.MANAGER_ID = m.EMPLOYEE_ID
+JOIN DEPARTMENTS d ON e.DEPARTMENT_ID =  DEPARTMENTS.DEPARTMENT_ID
+JOIN LOCATIONS l ON d.LOCATION_ID = l.LOCATION_ID
+GROUP BY CITY, m.LAST_NAME
+HAVING AVG(e.COMMISSION_PCT) IS NOT NULL ;
+```
+
+### 5)
+
+```sql
+SELECT COUNTRY_ID, m.LAST_NAME, COUNT(*)
+FROM LOCATIONS
+INNER JOIN DEPARTMENTS on LOCATIONS.LOCATION_ID = DEPARTMENTS.LOCATION_ID
+INNER JOIN EMPLOYEES m on DEPARTMENTS.DEPARTMENT_ID = m.DEPARTMENT_ID
+INNER JOIN EMPLOYEES e on e.MANAGER_ID = m.EMPLOYEE_ID
+GROUP BY COUNTRY_ID, m.LAST_NAME
+HAVING COUNTRY_ID <> 'US';
+```
+
+## 5.1 Sous requête dans la clause WHERE
+
+### 1)
+
+Sélection first_name, last_name des employés de EMPLOYEES ayant le plus petit salaire
+
+```sql
+SELECT FIRST_NAME, LAST_NAME
+FROM EMPLOYEES
+WHERE SALARY = (SELECT MIN(SALARY) FROM EMPLOYEES);
+```
+
+### 2)
+
+Sélection first_name, last_name des employés de EMPLOYEES qui sont managers
+
+```sql
+SELECT m.FIRST_NAME, m.LAST_NAME
+FROM EMPLOYEES m
+WHERE m.EMPLOYEE_ID IN (SELECT MANAGER_ID FROM EMPLOYEES);
+```
+
+### 3)
+
+Sélection de : first_name, last_name des employés de EMPLOYEES ayant le même last_name.
+
+```sql
+SELECT FIRST_NAME, LAST_NAME
+FROM EMPLOYEES
+WHERE LAST_NAME IN (
+SELECT LAST_NAME FROM EMPLOYEES GROUP BY LAST_NAME HAVING COUNT(*) > 1);
+```
+
+### 4)
+
+Sélection de : prénom, nom, fonction, précédente fonction des employés de
+EMPLOYEES ayant changés de fonction (indiqués dans JOB_HISTORY)
+
+```sql
+SELECT e.FIRST_NAME, e.LAST_NAME, e.JOB_ID, h.JOD_ID
+FROM EMPLOYEES e
+JOIN JOB_HISTORY h ON e.EMPLOYEE_ID = h.EMPLOYEE_ID
+WHERE EMPLOYEE_ID = h.EMPLOYEE_ID
+```
+
+## 5.2 Sous requête dans la clause FROM
+
+### 1)
+
+Sélection first_name, last_name, salaire des employés de EMPLOYEES ayant le plus petit salaire ou le plus gros salaire
+
+### 2)
+
+Sélection de : prénom, nom, fonction, précédente fonction des employés de
+EMPLOYEES ayant changés de fonction (indiqués dans JOB_HISTORY)
+
+```sql
+SELECT FIRST_NAME, LAST_NAME, job_actuel.JOB_TITLE "Fonction actuelle", job_precedent.JOB_TITLE "Précédente fonction"
+FROM JOB_HISTORY
+JOIN EMPLOYEES ON EMPLOYEES.EMPLOYEE_ID = JOB_HISTORY.EMPLOYEE_ID
+JOIN JOBS job_actuel ON EMPLOYEES.JOB_ID = job_actuel.JOB_ID
+JOIN JOBS job_precedent ON JOB_HISTORY.JOB_ID = job_precedent.JOB_ID
+JOIN
+(
+  SELECT EMPLOYEE_ID, MAX(END_DATE) AS max_date
+  FROM JOB_HISTORY
+  GROUP BY EMPLOYEE_ID
+) precedent
+ON precedent.EMPLOYEE_ID = EMPLOYEES.EMPLOYEE_ID
+AND precedent.MAX_DATE = JOB_HISTORY.END_DATE;
+```
+
+### 3)
+
+Sélection first_name, last_name des employés de EMPLOYEES qui sont managers
+
+```sql
+SELECT e.FIRST_NAME, e.LAST_NAME
+FROM EMPLOYEES e
+JOIN
+(
+  SELECT MANAGER_ID, COUNT(EMPLOYEE_ID)
+  FROM EMPLOYEES
+  GROUP BY MANAGER_ID
+) manager
+ON e.EMPLOYEE_ID = manager.MANAGER_ID;
+```
