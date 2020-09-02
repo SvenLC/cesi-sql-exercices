@@ -557,3 +557,42 @@ JOIN
 ) manager
 ON e.EMPLOYEE_ID = manager.MANAGER_ID;
 ```
+
+## 6.3 Opérateurs ensemblistes
+
+### 1)
+
+Sélection de : level, nom, prénom de tous les employés de EMPLOYEES :
+
+```sql
+SELECT LEVEL, LAST_NAME, FIRST_NAME
+from employees
+-- On détermine le côté parent de la relation (le parent est employee_id)
+CONNECT BY PRIOR EMPLOYEE_ID = MANAGER_ID
+START WITH MANAGER_ID IS NULL;
+```
+
+### 2)
+
+Sélection de : nom prénom de tous les employés de EMPLOYEES sous forme d'une arborscence de type :
+Branche niveau 1
+... Branche niveau 1
+....... Feuille niveau 3
+....... Branche niveau 3
+
+```sql
+SET PAGESIZE 2000
+SELECT
+  CASE LEVEL
+    WHEN 1 THEN ''
+    WHEN 2 THEN '... '
+    WHEN 3 THEN '...... '
+    WHEN 4 THEN '......... '
+    END
+  ||
+  LAST_NAME ||
+  FIRST_NAME AS "Employé"
+FROM EMPLOYEES
+CONNECT BY PRIOR EMPLOYEE_ID = MANAGER_ID
+START WITH MANAGER_ID IS NULL;
+```
