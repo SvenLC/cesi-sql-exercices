@@ -88,3 +88,83 @@ CREATE TABLE STOCKS(
     DATE_INVENTAIRE DATE DEFAULT SYSDATE
 );
 ```
+
+```sql
+CREATE TABLE INTERVENTIONS (
+    NO_INTERVENTION VARCHAR2(20) NOT NULL PRIMARY KEY,
+    REFERENCE_PEC VARCHAR2(20)
+    INTERVENANT NUMBER(*,0) NOT NULL,
+    DETAIL VARCHAR2(255),
+    DATE_INTERVENTION DATE,
+    TEMPS_PASSE NUMBER(5,2)
+    CONSTRAINT REFERENCE_PEC_FK
+    FOREIGN KEY (REFERENCE_PEC)
+    REFERENCES PRISES_EN_CHARGE (REFERENCE)
+    CONSTRAINT INTERVENANT
+    FOREIGN KEY (REFERENCE_PEC)
+    REFERENCES SALARIES (MATRICULE)
+
+);
+```
+
+## 9.2 Modification des tables
+
+### 1)
+
+Modification de la table STOCKS le type de données de la colonne QUANTITE doit être NUMBER(5,0).
+
+```sql
+ALTER TABLE STOCKS MODIFY(QUANTITE NUMBER(5,0));
+```
+
+### 2)
+
+    Ajouter une contrainte à la colonne CIVILITE de la table CLIENTS pour vérifier que sa valeur est « M. » ou « MME ».
+
+```sql
+ALTER TABLE CLIENTS MODIFY(CIVILITE CHECK(CIVILITE in('M.' , 'MME')));
+```
+
+### 3)
+
+Ajouter une contrainte à la colonne CIVILITE de la table SALARIES pour vérifier que sa valeur est « M. » ou « MME ».
+
+```sql
+ALTER TABLE SALARIES MODIFY(CIVILITE CHECK(CIVILITE in('M.' , 'MME')));
+```
+
+### 4)
+
+Ajouter une contrainte à la table PRISES_EN_CHARGE pour vérifier que DATE_FIN est supérieure DATE_DEBUT.
+
+```sql
+ALTER TABLE PRISES_EN_CHARGE ADD CHECK(DATE_FIN > DATE_DEBUT);
+```
+
+### 5)
+
+Ajouter la contrainte STOCKS_PIECES_FK à la table STOCKS : la colonne REF_PIECE est une clef étrangère de la colonne REFERENCE de la table PIECES.
+
+```sql
+ALTER TABLE STOCKS ADD CONSTRAINT STOCKS_PIECES_FK FOREIGN KEY (REF_PIECE) REFERENCES PIECES(REFERENCE)
+```
+
+## 9.3 Renommage d’une table
+
+### 1)
+
+Renommer la table PIECES en « PIECES_DETACHEES ».
+
+```sql
+RENAME PIECES TO PIECES_DETACHES
+```
+
+## 9.4 Suppression d’une table
+
+### 1)
+
+Supprimer la table STOCKS.
+
+```sql
+DROP TABLE STOCKS;
+```
